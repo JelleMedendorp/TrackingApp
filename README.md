@@ -1,1 +1,3 @@
-Tracking App for Thesis Jelle Medendorp 
+Acoustic Zero-Permission Tracking App
+Made by Jelle Medendorp
+For thesis
