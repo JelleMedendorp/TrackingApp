@@ -3,7 +3,7 @@ import { Button, View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './screens/home'
-import DetailsScreen from './screens/other'
+import DetailsScreen from './screens/other.js'
 import GyroscopeScreen from './screens/gyroscope'
 
 const Stack = createNativeStackNavigator();
