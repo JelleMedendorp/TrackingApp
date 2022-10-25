@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './screens/home'
 import DetailsScreen from './screens/other.js'
 import GyroscopeScreen from './screens/gyroscope'
+import DiagramScreen from './screens/diagram';  
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ function App( ) {
                       />
         <Stack.Screen name="Details" component={DetailsScreen} />
         <Stack.Screen name="Gyroscope" component={GyroscopeScreen} />
+        <Stack.Screen name="Diagram" component={DiagramScreen} />
         
       </Stack.Navigator>
     </NavigationContainer>

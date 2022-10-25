@@ -1,41 +1,93 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, View, Text, Dimensions } from 'react-native';
 import { Chart, Line, Area, HorizontalAxis, VerticalAxis } from 'react-native-responsive-linechart'
+import { PieChart } from "react-native-chart-kit";
+import { Gyroscope } from 'expo-sensors';
 
 
 
 function DetailsScreen({ route, navigation}) {
-    return (
+  const [data, setData] = useState({
+    x: 0,
+    y: 0,
+    z: 0,
+  });
+  const [subscription, setSubscription] = useState(null);
 
+  const _subscribe = () => {
+    setSubscription(
+      Gyroscope.addListener(gyroscopeData => {
+        setData(gyroscopeData);
+      })
+    );
+  };
+
+  const _unsubscribe = () => {
+    subscription && subscription.remove();
+    setSubscription(null);
+  };
+
+  useEffect(() => {
+    _subscribe();
+    return () => _unsubscribe();
+  }, []);
   
+  const {x, y, z} = data
+
+  const pieData = [
+    {
+    name: "Data 1",
+    value: x,
+    color: "skyblue",
+    legendFontColor: "#181818",
+    legendFontSize: 15
+    },
+    {
+    name: "Data 2",
+    value: y,
+    color: "blue",
+    legendFontColor: "#181818",
+    legendFontSize: 15
+    },
+    {
+    name: "Data 3",
+    value: z,
+    color: "red",
+    legendFontColor: "#181818",
+    legendFontSize: 15
+    },
+    ];
+    const chartConfig = {
+    backgroundGradientFrom: "#1E2923",
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientTo: "#08130D",
+    backgroundGradientToOpacity: 0.5,
+    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+    strokeWidth: 2, // optional, default 3
+    barPercentage: 0.5
+    }; 
+  //  const {x, y, z} = data
+  //  const x = 10
+  //  const y = 10
+  //  const z = 10
+  return (
+
+    <View style={{flex:1,justifyContent:'space-evenly', alignItems: 'center' }}>
+    <Text style={{ fontSize:30 }}>Pie Chart Data</Text>
+    <PieChart
+    data={pieData}
+    width={500}
+    height={220}
+    chartConfig={chartConfig}
+    accessor="value"
+    backgroundColor="transparent"
+    paddingLeft="20"
+    absolute
+    />
   
-  <View>
-  <Text>Test chart</Text>
-  <Chart
-  style={{ height: '90%', width: '100%' }}
-  data={[
-    { x: 0, y: 10 },
-    { x: 1, y: 7 },
-    { x: 2, y: 6 },
-    { x: 3, y: -8 },
-    { x: 4, y: 10 },
-    { x: 5, y: 8 },
-    { x: 6, y: -10 },
-    { x: 7, y: 10 },
-    { x: 8, y: -10 },
-    { x: 9, y: 10 },
-    { x: 10, y: 18 },
-  ]}
-  padding={{ left: 40, bottom: 20, right: 20, top: 20 }}
-  xDomain={{ min: 0, max: 10 }}
-  yDomain={{ min: -10, max: 10 }}
->
-  <VerticalAxis tickCount={11} theme={{ labels: { formatter: (v) => v.toFixed(2) } }} />
-  <HorizontalAxis tickCount={5} />
-  <Area theme={{ gradient: { from: { color: '#ffa502' }, to: { color: '#ffa502', opacity: 0.4 } }}} />
-  <Line theme={{ stroke: { color: '#ffa502', width: 5 }, scatter: { default: { width: 4, height: 4, rx: 2 }} }} />
-</Chart>
-</View>
+    </View>
+
+
 
     
     );

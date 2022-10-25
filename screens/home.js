@@ -9,6 +9,14 @@ function HomeScreen({ navigation }) {
         <Text>Home Screen {Dimensions.get("window").width}</Text>
         <Button
           title="Go to Chart"
+          onPress={() => navigation.navigate('Diagram')}
+        />
+        <Button
+          title="Go to Gyroscopic data"
+          onPress={() => navigation.navigate('Gyroscope')}
+        />
+        <Button
+          title="Go to Other"
           onPress={() => navigation.navigate('Details')}
         />
       </View>
