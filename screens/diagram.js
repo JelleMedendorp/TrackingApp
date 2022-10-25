@@ -1,79 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Button, View, Text, Dimensions } from 'react-native';
-import { Chart, Line, Area, HorizontalAxis, VerticalAxis } from 'react-native-responsive-linechart'
+import { VictoryBar, VictoryChart, VictoryTheme } from "victory-native";
 import { Gyroscope } from 'expo-sensors';
 
 
 
 
 function DiagramScreen({ route, navigation}) {
-  const currentWitdh = 15;
-  const [data, setData] = useState({
-    x: 0,
-    y: 0,
-    z: 0,
-  });
+  const [chartData, setData] = useState(data)
+  let maxYear = 2015
+  const data = [
+    { year: 2011, earnings: 13000 },
+    { year: 2012, earnings: 16500 },
+    { year: 2013, earnings: 14250 },
+    { year: 2014, earnings: 19000 }
+   ];
 
-  let q = 0;
-  const diagramData=[
-    { x: 0, y: q }, 
-  ]
-
-  function changeQ(){
-    q = q++;
-  }
-
-  const [subscription, setSubscription] = useState(null);
-  const xx = 0
-  const _subscribe = () => {
-    setSubscription(
-      Gyroscope.addListener(gyroscopeData => {
-        setData(gyroscopeData);
-
-      })
-    );
-  };
-
-  const _unsubscribe = () => {
-    subscription && subscription.remove();
-    setSubscription(null);
-  };
-
-  useEffect(() => {
-    _subscribe();
-    return () => _unsubscribe();
-  }, []);
-   
-  
+   const addData = () => {
+    var d = [...chartData]
+    var obj = {year: `${maxYear}`, earnings: Math.random() * (20000 - 10000) + 10000}
+    d.push(obj)
+    setData(d)
+    maxYear++
+   }
 
   return (
-
-  
-  
-  <View>
-  <Text>Test chart</Text>
-  <Chart
-  style={{ height: '90%', width: '100%' }}
-  data={diagramData}
-  padding={{ left: 40, bottom: 20, right: 20, top: 20 }}
-  xDomain={{ min: 0, max: currentWitdh }}
-  yDomain={{ min: -10, max: 10 }}
->
-  <VerticalAxis tickCount={11} theme={{ labels: { formatter: (v) => v.toFixed(2) } }} />
-  <HorizontalAxis tickCount={5} />
- 
-  <Line theme={{ stroke: { color: '#ffa502', width: 5 }, scatter: { default: { width: 4, height: 4, rx: 2 }} }} />
-</Chart>
-
-<Button
-          title="Go to Other"
-          onPress={changeQ()}
-        />
-      </View>
-
-
-    
-    );
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <VictoryChart width={350} theme={VictoryTheme.material}>
+    <VictoryBar data={data} x="quarter" y="earnings" />
+</VictoryChart>
+<Button onPress={addData} title="Add Earnings"/>
+    </View>
+  );
   }
 export default DiagramScreen;
 
