@@ -1,36 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Button, View, Text, Dimensions } from 'react-native';
-import { VictoryBar, VictoryChart, VictoryTheme } from "victory-native";
+import { LineChart, Grid } from 'react-native-svg-charts'
 import { Gyroscope } from 'expo-sensors';
 
 
 
 
 function DiagramScreen({ route, navigation}) {
-  const [chartData, setData] = useState(data)
-  let maxYear = 2015
-  const data = [
-    { year: 2011, earnings: 13000 },
-    { year: 2012, earnings: 16500 },
-    { year: 2013, earnings: 14250 },
-    { year: 2014, earnings: 19000 }
-   ];
+  
+  const dataset = [50, 10, 40, 95, -4, -24, 85, 91, 35, 53, -53, 24, 50, -20, -80, 90]
+  const [data, setData] = useState(dataset)
 
-   const addData = () => {
-    var d = [...chartData]
-    var obj = {year: `${maxYear}`, earnings: Math.random() * (20000 - 10000) + 10000}
-    d.push(obj)
-    setData(d)
-    maxYear++
-   }
+
+  const _handleUpdate = () => {
+    console.log('added data');
+    setData(oldArray => [...oldArray, 20])
+  };
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <VictoryChart width={350} theme={VictoryTheme.material}>
-    <VictoryBar data={data} x="quarter" y="earnings" />
-</VictoryChart>
-<Button onPress={addData} title="Add Earnings"/>
-    </View>
+    <View>
+    <LineChart
+    style={{ height: 200 }}
+    data={data}
+    svg={{ stroke: 'rgb(134, 65, 244)' }}
+    contentInset={{ top: 20, bottom: 20 }}
+>
+    <Grid />
+</LineChart>
+<Button
+      onPress={_handleUpdate}
+      title="Learn More"
+      color="#841584"
+      accessibilityLabel="Learn more about this purple button"
+/></View>
+
   );
   }
 export default DiagramScreen;

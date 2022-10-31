@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Button, View, Text, Dimensions } from 'react-native';
-import { Chart, Line, Area, HorizontalAxis, VerticalAxis } from 'react-native-responsive-linechart'
-import { PieChart } from "react-native-chart-kit";
+import { Button, View, Text, TouchableOpacity,Alert } from 'react-native';
 import { Gyroscope } from 'expo-sensors';
+import { LineChart, Grid,AreaChart, YAxis } from 'react-native-svg-charts'
+import * as shape from 'd3-shape'
 
 
-
-function DetailsScreen({ route, navigation}) {
+function DetailsScreen() {
   const [data, setData] = useState({
     x: 0,
     y: 0,
     z: 0,
   });
+  const datasetter = [0]
+  const [array, setArray] = useState(datasetter)
   const [subscription, setSubscription] = useState(null);
+
+  const _slow = () => {
+    Gyroscope.setUpdateInterval(1000);
+  };
+
+  const _fast = () => {
+    Gyroscope.setUpdateInterval(16);
+  };
 
   const _subscribe = () => {
     setSubscription(
@@ -29,67 +38,52 @@ function DetailsScreen({ route, navigation}) {
 
   useEffect(() => {
     _subscribe();
+    _handleUpdate();
     return () => _unsubscribe();
   }, []);
   
   const {x, y, z} = data
+  const _handleUpdate = () => {
+    if(array.length < 200) {
+      setArray(oldArray => [...oldArray, y])
+    } else {
+      setArray(oldArray => [...oldArray.slice(1), y])
+    }
+  };
 
-  const pieData = [
-    {
-    name: "Data 1",
-    value: x,
-    color: "skyblue",
-    legendFontColor: "#181818",
-    legendFontSize: 15
-    },
-    {
-    name: "Data 2",
-    value: y,
-    color: "blue",
-    legendFontColor: "#181818",
-    legendFontSize: 15
-    },
-    {
-    name: "Data 3",
-    value: z,
-    color: "red",
-    legendFontColor: "#181818",
-    legendFontSize: 15
-    },
-    ];
-    const chartConfig = {
-    backgroundGradientFrom: "#1E2923",
-    backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: "#08130D",
-    backgroundGradientToOpacity: 0.5,
-    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5
-    }; 
-  //  const {x, y, z} = data
-  //  const x = 10
-  //  const y = 10
-  //  const z = 10
-  return (
+  setInterval(_handleUpdate, 6000);
 
-    <View style={{flex:1,justifyContent:'space-evenly', alignItems: 'center' }}>
-    <Text style={{ fontSize:30 }}>Pie Chart Data</Text>
-    <PieChart
-    data={pieData}
-    width={500}
-    height={220}
-    chartConfig={chartConfig}
-    accessor="value"
-    backgroundColor="transparent"
-    paddingLeft="20"
-    absolute
-    />
-  
-    </View>
-
-
+  const contentInset = { top: 20, bottom: 20 }
+return (
 
     
-    );
+  <View style={{ height: 200, flexDirection: 'row' }}>
+                      <YAxis
+                    data={array}
+                    contentInset={contentInset}
+                    svg={{
+                        fill: 'grey',
+                        fontSize: 10,
+                    }}
+                    numberOfTicks={10}
+                    formatLabel={(value) => `${value}`}
+                />
+   <LineChart
+                style={{ flex: 1, marginLeft: 16 }}
+                data={array}
+                svg={{ stroke: 'rgb(134, 65, 244)' }}
+                contentInset={contentInset}
+                numberOfTicks={10}
+            >
+                <Grid />
+            </LineChart>
+            <TouchableOpacity onPress={_slow}>
+          <Text>Slow</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={_fast}>
+          <Text>Fast</Text>
+        </TouchableOpacity>
+  </View>
+);
   }
 export default DetailsScreen;
