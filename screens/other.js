@@ -6,7 +6,7 @@ import * as shape from 'd3-shape'
 
 
 function DetailsScreen() {
-  const datasetter = [0,0,0]
+  const datasetter = [0]
   const [array, setArray] = useState(datasetter)
   const [subscription, setSubscription] = useState(null);
 
