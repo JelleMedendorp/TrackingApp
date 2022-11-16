@@ -10,17 +10,20 @@ function DetailsScreen() {
   const [xdata, setXdata] = useState(datasetter)
   const [ydata, setYdata] = useState(datasetter)
   const [zdata, setZdata] = useState(datasetter)
-  const [hits, setHits] = useState(0)
   const [subscription, setSubscription] = useState(null);
+  const [counter, setCounter] = useState (0);
+  const [timeElapsed, setTimeElapsed] = useState (0);
+  const [startTimer, setStartTimer] = useState(false);
 
   let time = 0;
+  let time2 = 0;
   let interval = 0;
   const waveLength = 500;
   const hitTime = 2000;
   const buffer = 500;
   const listenTime = 9000;
-  let beginTime = Date.now();
   global.timesHit = 0;
+  const beginTime = Date.now();
 
   let data = {x: 0, y: 0, z: 0};
 
@@ -32,18 +35,20 @@ function DetailsScreen() {
     Gyroscope.setUpdateInterval(100);
   };
 
-  const _interval = (y) => {
-    interval = Date.now() - time + waveLength;
+  const _interval = (time3) => {
+    interval = Date.now() - time ;
     time = Date.now();
-    if((1500 < interval) && (interval < 2500)){
+//    if(time2 == 0){
+//      time2 = Date.now();
+//    } else if (Date.now () - time2 > 4000) {
+//      time2 = Date.now();
+//      setCounter(0);
+//    }
+    console.log(interval)
+    if((5500 > interval) && (interval > 4000)){
       console.log("hit!");
-      let tempHit = hits
-      console.log(tempHit);
-      setHits(1);
-      console.log(hits);
-
+      setCounter(oldCounter => oldCounter + 1);
     }
-              
   }
 
   const _subscribe = () => {
@@ -51,19 +56,19 @@ function DetailsScreen() {
         Gyroscope.addListener(gyroscopeData => {
         data = gyroscopeData;
         const {x, y, z} = data
-      //  console.log(Date.now());
-        if(y > 1 || y < -1){
+        if(y > 0.004 || y < -0.004){
+//          console.log("0");
           _interval(y) ;
+        } else {
+//          console.log("1");
         }
-//        console.log(hits);
-        if(hits == 1){
-          beginTime = Date.now();
-        }
-//        console.log(Date.now() - beginTime);
-
+        
+        setTimeElapsed(Date.now() - beginTime);
         setXdata(oldArray => [...oldArray, x]);
         setYdata(oldArray => [...oldArray, y]);
         setZdata(oldArray => [...oldArray, z]);
+
+
       })
     );
   };
@@ -75,10 +80,10 @@ function DetailsScreen() {
 
   useEffect(() => { 
     _subscribe();
-//  _handleUpdate();
     return () => _unsubscribe();
   }, []);
   
+
  // const _handleUpdate = () => {
  //   if(ydata.length > 200) {
  //     setZdata(oldArray => [...oldArray.slice(1)]);
@@ -101,10 +106,11 @@ function DetailsScreen() {
     },
   ]
 
-return (    
+return (   
+  <View> 
   <View style={{ height: 200, flexDirection: 'row' }}>
     <YAxis
-      data={graphData}
+      data={ydata}
       contentInset={contentInset}
       svg={{
           fill: 'grey',
@@ -115,14 +121,19 @@ return (
     />               
     <LineChart
       style={{ flex: 1, marginLeft: 16 }}
-      data = {graphData}
+      data = {ydata}
       svg={{ stroke: 'rgb(134, 65, 244)' }}
       contentInset={contentInset}
       numberOfTicks={10}
     >
     <Grid />
     </LineChart>
-
+    </View>
+    <View>
+    <Text>{counter}</Text>
+    <Text>{Math.trunc(timeElapsed/1000)}</Text>
+    <Text>{}</Text>
+{/*
     <TouchableOpacity onPress={_slow}>
       <Text>Slow</Text>
     </TouchableOpacity>
@@ -132,6 +143,8 @@ return (
     <TouchableOpacity onPress={subscription ? _unsubscribe : _subscribe} >
       <Text>{subscription ? 'On' : 'Off'}</Text>
     </TouchableOpacity>
+    */}
+  </View>
   </View>
 );
   }
