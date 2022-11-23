@@ -1,3 +1,7 @@
+//Jelle Medendorp
+//S1027748
+//2022
+
 import React, { useState, useEffect } from 'react';
 import { Button, View, Text, TouchableOpacity,Alert } from 'react-native';
 import { Gyroscope } from 'expo-sensors';
@@ -6,6 +10,7 @@ import * as shape from 'd3-shape'
 
 
 function DetailsScreen() {
+  //States
   const datasetter = [0]
   const [xdata, setXdata] = useState(datasetter)
   const [ydata, setYdata] = useState(datasetter)
@@ -13,20 +18,21 @@ function DetailsScreen() {
   const [subscription, setSubscription] = useState(null);
   const [counter, setCounter] = useState (0);
   const [timeElapsed, setTimeElapsed] = useState (0);
-  const [startTimer, setStartTimer] = useState(false);
+  const [binary, setBinary] = useState([]);
 
+  //Constants
   let time = 0;
-  let time2 = 0;
-  let interval = 0;
-  const waveLength = 500;
-  const hitTime = 2000;
-  const buffer = 500;
+  let interval = 0; 
+  const waveTime = 1000;
+  const betweenTime = 3000;
+  const hitTime = 3000;
+  const buffer = 1000;
   const listenTime = 9000;
   global.timesHit = 0;
   const beginTime = Date.now();
-
   let data = {x: 0, y: 0, z: 0};
 
+  //Set interval faster or slower
   const _slow = () => {
     Gyroscope.setUpdateInterval(1000);
   };
@@ -35,32 +41,32 @@ function DetailsScreen() {
     Gyroscope.setUpdateInterval(100);
   };
 
+  //Calculate the interval between "Hits", and differt this to binary
   const _interval = (time3) => {
     interval = Date.now() - time ;
     time = Date.now();
-//    if(time2 == 0){
-//      time2 = Date.now();
-//    } else if (Date.now () - time2 > 4000) {
-//      time2 = Date.now();
-//      setCounter(0);
-//    }
-    console.log(interval)
-    if((5500 > interval) && (interval > 4000)){
-      console.log("hit!");
-      setCounter(oldCounter => oldCounter + 1);
+  //console.log(interval) -- Check intervals for debugging
+    if(((hitTime + 1000) > interval) && (interval > (hitTime -1000))){
+      console.log("1");
+      setBinary(oldArray => [...oldArray, 1]);
+    } else if ((((2*hitTime+waveTime) + 1000) > interval) && (interval > ((2*hitTime+waveTime) -1000))){
+      console.log("01")
+      setBinary(oldArray => [...oldArray,0,1]);
+    } else if ((((3*hitTime+waveTime) + 1000) > interval) && (interval > ((3*hitTime+waveTime) -1000))){
+      setBinary(oldArray => [...oldArray,0,0,1]);
+      console.log("001")
     }
-  }
+}
 
+//Subscription on the gyroscope and sends us to interval function if there is a peak
   const _subscribe = () => {
     setSubscription(
         Gyroscope.addListener(gyroscopeData => {
         data = gyroscopeData;
         const {x, y, z} = data
-        if(y > 0.004 || y < -0.004){
-//          console.log("0");
+        if(y > 0.04 || y < -0.04){
           _interval(y) ;
         } else {
-//          console.log("1");
         }
         
         setTimeElapsed(Date.now() - beginTime);
@@ -73,24 +79,22 @@ function DetailsScreen() {
     );
   };
 
+
   const _unsubscribe = () => {
     subscription && subscription.remove();
     setSubscription(null);
   };
 
+//Use Effect
   useEffect(() => { 
     _subscribe();
     return () => _unsubscribe();
   }, []);
   
-
- // const _handleUpdate = () => {
- //   if(ydata.length > 200) {
- //     setZdata(oldArray => [...oldArray.slice(1)]);
- //   } 
- // };
+//contentInset for the graph  
   const contentInset = { top: 20, bottom: 20 }
 
+//Data for the graph if we want to see all 3 dimensions 
   const graphData = [
     {
         data: xdata.slice(-200),
@@ -106,9 +110,12 @@ function DetailsScreen() {
     },
   ]
 
+//Return that gets loaded on the sceen
 return (   
   <View> 
   <View style={{ height: 200, flexDirection: 'row' }}>
+
+    {/* YAxis for displaying the Y axis */}
     <YAxis
       data={ydata}
       contentInset={contentInset}
@@ -118,7 +125,8 @@ return (
       }}
       numberOfTicks={10}
       formatLabel={(value) => `${value}`}
-    />               
+    />  
+    {/* Displays graph */}             
     <LineChart
       style={{ flex: 1, marginLeft: 16 }}
       data = {ydata}
@@ -130,20 +138,11 @@ return (
     </LineChart>
     </View>
     <View>
+
+    {/* Counts number of hits and gives us the time elapsed in seconds*/}  
     <Text>{counter}</Text>
     <Text>{Math.trunc(timeElapsed/1000)}</Text>
-    <Text>{}</Text>
-{/*
-    <TouchableOpacity onPress={_slow}>
-      <Text>Slow</Text>
-    </TouchableOpacity>
-    <TouchableOpacity onPress={_fast}>
-      <Text>Fast</Text>
-    </TouchableOpacity>
-    <TouchableOpacity onPress={subscription ? _unsubscribe : _subscribe} >
-      <Text>{subscription ? 'On' : 'Off'}</Text>
-    </TouchableOpacity>
-    */}
+    <Text>{binary}</Text>
   </View>
   </View>
 );

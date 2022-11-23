@@ -1,3 +1,7 @@
+//Jelle Medendorp
+//s1027748
+//2022
+
 import React, { useState, useEffect } from 'react';
 import { Button, View, Text, TouchableOpacity,Alert } from 'react-native';
 import { LineChart, Grid,AreaChart, YAxis } from 'react-native-svg-charts'
