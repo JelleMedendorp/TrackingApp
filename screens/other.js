@@ -43,6 +43,12 @@ function DetailsScreen() {
 
   //Calculate the interval between "Hits", and differt this to binary
   const _interval = (time3) => {
+
+  // Below is untested but made so that the first wave is also enterpreted as a 1
+  //  if(time = 0){
+  //    console.log("1");
+  //    setBinary(oldArray => [...oldArray, 1]);
+  //  }
     interval = Date.now() - time ;
     time = Date.now();
   //console.log(interval) -- Check intervals for debugging
@@ -50,14 +56,15 @@ function DetailsScreen() {
       console.log("1");
       setBinary(oldArray => [...oldArray, 1]);
     } else if ((((2*hitTime+waveTime) + 1000) > interval) && (interval > ((2*hitTime+waveTime) -1000))){
-      console.log("01")
+      console.log("01") 
       setBinary(oldArray => [...oldArray,0,1]);
     } else if ((((3*hitTime+waveTime) + 1000) > interval) && (interval > ((3*hitTime+waveTime) -1000))){
       setBinary(oldArray => [...oldArray,0,0,1]);
-      console.log("001")
+      console.log("001") 
     }
 }
 
+ // const _intervalListener
 //Subscription on the gyroscope and sends us to interval function if there is a peak
   const _subscribe = () => {
     setSubscription(
