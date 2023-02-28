@@ -23,9 +23,9 @@ function DetailsScreen() {
   //Constants
   let time = 0;
   let interval = 0; 
-  const waveTime = 1000;
+  const waveTime = 250;
   const betweenTime = 3000;
-  const hitTime = 3000;
+  const hitTime = 2400;
   const buffer = 1000;
   const listenTime = 9000;
   global.timesHit = 0;
@@ -45,14 +45,14 @@ function DetailsScreen() {
   const _interval = (time3) => {
     interval = Date.now() - time ;
     time = Date.now();
-  //console.log(interval) -- Check intervals for debugging
-    if(((hitTime + 1000) > interval) && (interval > (hitTime -1000))){
+    console.log(interval);
+    if(((hitTime + 500) > interval) && (interval > (hitTime -500))){
       console.log("1");
       setBinary(oldArray => [...oldArray, 1]);
     } else if ((((2*hitTime+waveTime) + 1000) > interval) && (interval > ((2*hitTime+waveTime) -1000))){
       console.log("01")
       setBinary(oldArray => [...oldArray,0,1]);
-    } else if ((((3*hitTime+waveTime) + 1000) > interval) && (interval > ((3*hitTime+waveTime) -1000))){
+    } else if ((((3*hitTime+2*waveTime) + 1000) > interval) && (interval > ((3*hitTime+2*waveTime) -1000))){
       setBinary(oldArray => [...oldArray,0,0,1]);
       console.log("001")
     }
@@ -64,7 +64,7 @@ function DetailsScreen() {
         Gyroscope.addListener(gyroscopeData => {
         data = gyroscopeData;
         const {x, y, z} = data
-        if(y > 0.04 || y < -0.04){
+        if(y > 0.004 || y < -0.002){
           _interval(y) ;
         } else {
         }
