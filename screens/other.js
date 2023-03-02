@@ -45,10 +45,10 @@ function DetailsScreen() {
   const _interval = (time3) => {
 
   // Below is untested but made so that the first wave is also enterpreted as a 1
-  //  if(time = 0){
-  //    console.log("1");
-  //    setBinary(oldArray => [...oldArray, 1]);
-  //  }
+    if(time == 0){
+      console.log("1");
+      setBinary(oldArray => [...oldArray, 1]);
+    }
     interval = Date.now() - time ;
     time = Date.now();
     console.log(interval);
@@ -71,7 +71,7 @@ function DetailsScreen() {
         Gyroscope.addListener(gyroscopeData => {
         data = gyroscopeData;
         const {x, y, z} = data
-        if(y > 0.004 || y < -0.002){
+        if(y > 0.004 || y < -0.008){
           _interval(y) ;
         } else {
         }
